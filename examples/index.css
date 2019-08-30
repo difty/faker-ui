@@ -12,8 +12,6 @@
 
 html {
   box-sizing: border-box;
-  background-color: #f4f4f4;
-  color: #333;
   font-family: 'Helvetica Neue', Tahoma, Arial, PingFangSC-Regular, 'Hiragino Sans GB', 'Microsoft Yahei', sans-serif;
   user-select: none;
   -webkit-font-smoothing: antialiased;
@@ -35,7 +33,6 @@ ul {
 
 a {
   outline: none;
-  color: #333;
   text-decoration: none;
 }
 
