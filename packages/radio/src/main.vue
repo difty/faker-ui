@@ -1,11 +1,12 @@
 <template>
   <label class="h-radio">
-    <span class="h-radio-input" :class="{'is-checked': label === model}">
+    <span class="h-radio-input" :class="{'is-checked': label === model, 'is-disabled': disabled}">
       <span class="h-radio-inner"></span>
       <input
         ref="radio"
         class="h-radio-origin"
         type="radio"
+        :disabled="disabled"
         v-model="model"
         :value="label"
         @change="handleChange">
@@ -43,7 +44,8 @@ export default {
   mixins: [Emitter],
   props: {
     label: {},
-    value: {}
+    value: {},
+    disabled: Boolean,
   },
   computed: {
     model: {

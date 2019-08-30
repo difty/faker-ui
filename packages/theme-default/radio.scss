@@ -26,6 +26,20 @@
         }
       }
     }
+    &.is-disabled {
+      .h-radio-inner {
+        background-color: #f5f7fa;
+        border-color: #e4e7ed;
+        cursor: not-allowed;
+        &::after {
+          background-color: #c0c4cc;
+        }
+      }
+      &+.h-radio-text {
+        color: #c0c4cc;
+        cursor: not-allowed;
+      }
+    }
   }
   .h-radio-inner {
     border: 1px solid #DCDFE6;
