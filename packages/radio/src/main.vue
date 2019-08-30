@@ -37,8 +37,10 @@ select 字段将 value 作为 prop 并将 change 作为事件。
 ></custom-input>
 
 */
+import Emitter from 'src/mixins/emitter.js'
 export default {
   name: 'HRadio',
+  mixins: [Emitter],
   props: {
     label: {},
     value: {}
@@ -46,19 +48,36 @@ export default {
   computed: {
     model: {
       get() {
-        return this.value
+        return this.isGroup ? this._radioGroup.value : this.value
       },
       set(val) {
-        // 触发组件的 input 事件
-        this.$emit('input', val)
+        // radio group 触发父元素的 input 更新数据
+        if (this.isGroup) {
+          this.dispatch('HRadioGroup', 'input', [val]);
+        } else {
+          // 触发组件的 input 事件
+          this.$emit('input', val)
+        }
         this.$refs.radio && (this.$refs.radio.checked = this.model === this.label);
       }
+    },
+    isGroup() {
+      let parent = this.$parent
+      while(parent) {
+        if (parent.$options.name === 'HRadioGroup') {
+          this._radioGroup = parent
+          return true
+        } else {
+          parent = parent.$parent
+        }
+      }
+      return false
     }
   },
   methods: {
     handleChange(e) {
-      console.log(e)
       this.$emit('change', this.model)
+      this.isGroup && this.dispatch('ElRadioGroup', 'handleChange', this.model);
     }
   }
 }
