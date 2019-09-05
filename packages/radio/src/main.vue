@@ -79,7 +79,7 @@ export default {
   methods: {
     handleChange(e) {
       this.$emit('change', this.model)
-      this.isGroup && this.dispatch('ElRadioGroup', 'handleChange', this.model);
+      this.isGroup && this.dispatch('HRadioGroup', 'handleChange', this.model);
     }
   }
 }

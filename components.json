@@ -2,5 +2,7 @@
   "button": "./packages/button/index.js",
   "alert": "./packages/alert/index.js",
   "radio": "./packages/radio/index.js",
-  "radio-group": "./packages/radio-group/index.js"
+  "radio-group": "./packages/radio-group/index.js",
+  "checkbox": "./packages/checkbox/index.js",
+  "checkboxGroup": "./packages/checkboxGroup/index.js"
 }
