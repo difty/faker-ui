@@ -59,6 +59,17 @@ fileSave(path.join(__dirname, '../components.json'))
   .write(JSON.stringify(componentsFile, null, '  '), 'utf8')
   .end('\n')
 
+const cssFile = Object.keys(componentsFile).reduce((prev, next) => {
+  return `${prev}@import './${next}.scss';
+`
+}, '')
+fileSave(path.join(__dirname, '../packages/theme-default/index.scss'))
+  .write(cssFile, 'utf8')
+  .end('\n')
+fileSave(path.join(__dirname, `../packages/theme-default/${name}.scss`))
+  .write('', 'utf8')
+  .end('\n')
+
 files.forEach(file => {
   fileSave(path.join(packagePath, file.filename))
   .write(file.content, 'utf8')

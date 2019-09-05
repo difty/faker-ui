@@ -4,5 +4,6 @@
   "radio": "./packages/radio/index.js",
   "radio-group": "./packages/radio-group/index.js",
   "checkbox": "./packages/checkbox/index.js",
-  "checkboxGroup": "./packages/checkboxGroup/index.js"
+  "checkbox-group": "./packages/checkbox-group/index.js",
+  "input": "./packages/input/index.js"
 }

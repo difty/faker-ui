@@ -10,7 +10,7 @@
   </div>
 </template>
 <script>
-import CheckboxGroup from '../../packages/checkboxGroup'
+import CheckboxGroup from '../../packages/checkbox-group'
 import Checkbox from '../../packages/checkbox'
 export default {
   components: { CheckboxGroup, Checkbox },

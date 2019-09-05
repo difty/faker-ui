@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import './index.css'
-import App from './checkboxGroup/App.vue'
+import App from './checkbox-group/App.vue'
 import '../packages/theme-default/index.scss'
 new Vue({
   el: '#app',
