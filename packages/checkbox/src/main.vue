@@ -27,6 +27,7 @@
 </template>
 <script>
 // checkbox 绑定 v-model时会自动处理与 value 中的值比较
+// https://github.com/vuejs/vue/blob/dev/src/platforms/web/compiler/directives/model.js#L67
 import Emitter from 'src/mixins/emitter.js'
 
 export default {

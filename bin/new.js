@@ -60,9 +60,9 @@ fileSave(path.join(__dirname, '../components.json'))
   .end('\n')
 
 const cssFile = Object.keys(componentsFile).reduce((prev, next) => {
-  return `${prev}@import './${next}.scss';
-`
-}, '')
+  return `${prev}
+@import './${next}.scss';`
+}, "@import './icon.scss';")
 fileSave(path.join(__dirname, '../packages/theme-default/index.scss'))
   .write(cssFile, 'utf8')
   .end('\n')

@@ -36,7 +36,7 @@ select 字段将 value 作为 prop 并将 change 作为事件。
   v-bind:value="searchText"
   v-on:input="searchText = $event"
 ></custom-input>
-
+https://github.com/vuejs/vue/blob/dev/src/platforms/web/compiler/directives/model.js#L98
 */
 import Emitter from 'src/mixins/emitter.js'
 export default {
