@@ -1,5 +1,6 @@
 <template>
   <div
+    ref="input"
     class="h-input"
     :class="{'is-disabled': disabled}">
     <textarea
@@ -9,10 +10,14 @@
       v-model="model"
       :disabled="disabled"
       :maxlength="maxlength"
-      :rows="rows">
+      :rows="rows"
+      @focus="handleFocus"
+      @blur="handleBlur">
     </textarea>
     <input
       v-else
+      @focus="handleFocus"
+      @blur="handleBlur"
       :maxlength="maxlength"
       class="h-input-inner"
       :placeholder="placeholder"
@@ -73,6 +78,12 @@ export default {
     togglePassword() {
       this.passwordVisible = !this.passwordVisible
     },
+    handleFocus() {
+      this.$emit('focus')
+    },
+    handleBlur() {
+      this.$emit('blur')
+    }
   }
 }
 </script>
