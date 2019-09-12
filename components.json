@@ -6,5 +6,7 @@
   "checkbox": "./packages/checkbox/index.js",
   "checkbox-group": "./packages/checkbox-group/index.js",
   "input": "./packages/input/index.js",
-  "autocomplete": "./packages/autocomplete/index.js"
+  "autocomplete": "./packages/autocomplete/index.js",
+  "select": "./packages/select/index.js",
+  "option": "./packages/option/index.js"
 }

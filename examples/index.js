@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import './index.css'
-import App from './autocomplete/App.vue'
+import App from './select/App.vue'
 import '../packages/theme-default/index.scss'
 new Vue({
   el: '#app',

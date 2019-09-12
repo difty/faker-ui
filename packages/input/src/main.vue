@@ -10,6 +10,7 @@
       v-model="model"
       :disabled="disabled"
       :maxlength="maxlength"
+      :readonly="readonly"
       :rows="rows"
       @focus="handleFocus"
       @blur="handleBlur">
@@ -19,6 +20,7 @@
       @focus="handleFocus"
       @blur="handleBlur"
       :maxlength="maxlength"
+      :readonly="readonly"
       class="h-input-inner"
       :placeholder="placeholder"
       v-model="model"
@@ -49,6 +51,10 @@ export default {
     showPassword: Boolean,
     rows: Number,
     maxlength: Number,
+    readonly: {
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     return {
