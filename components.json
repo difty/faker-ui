@@ -8,5 +8,6 @@
   "input": "./packages/input/index.js",
   "autocomplete": "./packages/autocomplete/index.js",
   "select": "./packages/select/index.js",
-  "option": "./packages/option/index.js"
+  "option": "./packages/option/index.js",
+  "time-picker": "./packages/time-picker/index.js"
 }

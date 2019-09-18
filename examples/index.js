@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import './index.css'
-import App from './select/App.vue'
+import App from './time-picker/App.vue'
 import '../packages/theme-default/index.scss'
 new Vue({
   el: '#app',

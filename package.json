@@ -28,6 +28,7 @@
   "author": "donghao",
   "license": "ISC",
   "dependencies": {
+    "dayjs": "^1.8.16",
     "popper.js": "^1.15.0",
     "throttle-debounce": "^2.1.0"
   },
