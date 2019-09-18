@@ -35,8 +35,13 @@ export default {
         this.popperElement.contains(e.target) ||
         this.popperElement === e.target
       ) return
-      this.hidePopperFn()
-    },
+      if (this.showPopper) {
+        this.hidePopperFn()
+          if (this.clickOutsideCallback) {
+            this.clickOutsideCallback()
+          }
+        }
+      },
     showPopperFn() {
       this.showPopper = true
     },

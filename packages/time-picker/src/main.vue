@@ -56,15 +56,22 @@ export default {
       },
       oldValue: null,
       ItemHeight: 32,
+      tempValue: null
     }
   },
   computed: {
     input: {
       get() {
-        return this.value ? dayjs(new Date(this.value)).format('HH:mm:ss') : null
+        // TODO
+        // 这里判断 tempValue 由于输入的时候如果值不正确，会将值设为 this.value 但此时和之前的无变化，computed 不会更新，输入框的值还是 tempValue，但是实际的值是 this.value，这里这样做达到要求，思考下还有没有更好的做法？
+        return this.tempValue ? this.tempValue : this.value ? dayjs(new Date(this.value)).format('HH:mm:ss') : null
       },
       set(val) {
-        this.$emit('input', val ? val : (this.showPopper ? new Date : null))
+        if (val) {
+          this.tempValue = val
+        } else {
+          this.$emit('input', this.showPopper ? new Date : null)
+        }
       }
     },
     currentTime() {
@@ -127,11 +134,29 @@ export default {
       this.$emit('input', dayjs(this.value).set(type, +event.target.innerHTML).toDate())
     },
     cancel() {
-      this.$emit('input', this.oldValue)
+      if (this.tempValue) {
+        this.$emit('input', this.value)
+        this.tempValue = null
+      } else {
+        this.$emit('input', this.oldValue)
+      }
       this.hidePopperFn()
     },
     confirm() {
+      if (this.tempValue) {
+        const result = this.checkValue(this.tempValue)
+        if (!result) {
+          this.$emit('input', this.value)
+        } else {
+          const [hour, minute, second] = result
+          this.$emit('input', dayjs(this.value.setHours(hour, minute, second)).toDate())
+        }
+        this.tempValue = null
+      }
       this.hidePopperFn()
+    },
+    clickOutsideCallback() {
+      this.confirm()
     },
     adjustScroll(obj) {
       Object.keys(obj).forEach(key => {
@@ -141,6 +166,13 @@ export default {
           this.$refs[key][0].scrollTop = obj[key] * this.ItemHeight
         }
       })
+    },
+    //12:11:11
+    checkValue(val) {
+      if (!/^\d{1,2}:\d{1,2}:\d{1,2}$/.test(val)) return false
+      let arr = val.split(':')
+      if (+arr[0] > 23 || +arr[1] > 59 || +arr[2] > 59) return false
+      return [+arr[0], +arr[1], +arr[2]]
     },
   }
 }
