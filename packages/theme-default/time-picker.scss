@@ -52,17 +52,17 @@
         line-height: 32px;
         font-size: 12px;
         color: #606266;
-        &.disabled {
-          color: #c0c4cc;
-          cursor: not-allowed;
-        }
-        &:hover {
+        &:hover:not(.disabled) {
           background: #f5f7fa;
           cursor: pointer;
         }
         &.active {
           color: #303133;
           font-weight: 700;
+        }
+        &.disabled {
+          color: #c0c4cc;
+          cursor: not-allowed;
         }
       }
     }

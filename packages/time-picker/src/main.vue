@@ -14,13 +14,13 @@
       <div class="h-time-spinner">
         <div
           class="h-time-scroll"
-          v-for="(value, name) in items"
+          v-for="(value, name) in timeList"
           :key="name"
           @click.stop="handleTimeClick(name, $event)"
           @mouseenter="handleMouseOver(name)"
           :ref="name">
           <ul>
-            <li :class="{ 'active': currentTime[name] === n-1 }" v-for="n in value" :key="n">{{n-1}}</li>
+            <li :class="{ 'active': currentTime[name] === n, 'disabled': !isDisabled }" v-for="(isDisabled, n) in value" :key="n">{{n}}</li>
           </ul>
         </div>
       </div>
@@ -36,6 +36,7 @@ import HInput from 'packages/input';
 import popperMixin from 'src/mixins/popper'
 import dayjs from 'dayjs'
 import { debounce } from 'throttle-debounce'
+import { getArray, setRangeData } from 'src/utils/time'
 export default {
   name: 'HTimePicker',
   mixins: [popperMixin],
@@ -67,9 +68,11 @@ export default {
         return this.tempValue ? this.tempValue : this.value ? dayjs(new Date(this.value)).format('HH:mm:ss') : null
       },
       set(val) {
+        // val 不为空则是手动输入的
         if (val) {
           this.tempValue = val
         } else {
+          // 点击清空按钮时
           this.$emit('input', this.showPopper ? new Date : null)
         }
       }
@@ -82,6 +85,77 @@ export default {
         second: time.getSeconds()
       }
     },
+    // '18:30:00 - 20:30:00'
+    // ['18:30:00 - 20:30:00', '21:30:00 - 23:30:00']
+    rangeTime() {
+      const obj = {
+        0: 'start',
+        1: 'end'
+      }
+      let range = this.pickerOptions.selectableRange
+      if (range) {
+        if (typeof range == 'string') {
+          range = [range]
+        }
+        return range.map(item => {
+          const [start, end] = item.split('-').map(item1 => {
+            return item1.split(':').map(item2 => + item2)
+          })
+          return { start, end }
+        })
+      }
+      return []
+    },
+    /* 计算时间列表，并根据时间范围设置是否为 disable
+       hour 是将时间段内的小时数设为 true
+       minute 是根据时间段和当前的hour 来计算，分为4种情况
+       second 根据 hour 和 minute 来计算
+    */
+    timeList() {
+      const currentHour = this.currentTime.hour
+      const currentMinute = this.currentTime.minute
+      // 把在范围内的所有小时数放在数组里
+      let enableHour = []
+      let hour = []
+      let minute = new Array(60)
+      let second = new Array(60).fill(true)
+      this.rangeTime.forEach(item => {
+        const { start, end } = item
+        enableHour = enableHour.concat(getArray(start[0], end[0]))
+        if (start[0] === currentHour && currentHour !== end[0]) {
+          setRangeData(minute, start[1], 60, true)
+          if (start[1] === currentMinute) {
+            setRangeData(second, 0, start[2], false)
+          }
+        } else if (start[0] === currentHour && end[0] === currentHour) {
+          setRangeData(minute, start[1], end[1]+1, true)
+          if (start[1] === currentMinute && end[1] === currentMinute) {
+            setRangeData(second, 0, start[2], false)
+            setRangeData(second, end[2]+1, 60, false)
+          } else if (start[1] === currentMinute && end[1] !== currentMinute) {
+            setRangeData(second, 0, start[2], false)
+          } else if (start[1] !== currentMinute && end[1] === currentMinute) {
+            setRangeData(second, end[2]+1, 60, false)
+          }
+        } else if (start[0] !== currentHour && end[0] === currentHour) {
+          setRangeData(minute, 0, end[1]+1, true)
+          if (end[1] === currentMinute) {
+            setRangeData(second, end[2]+1, 60, false)
+          }
+        } else if (start[0] < currentHour && currentHour < end[0]) {
+          setRangeData(minute, 0, 60, true)
+        }
+      })
+      for (let i = 0; i < 24; i++) {
+        hour[i] = enableHour.indexOf(i) !== -1;
+      }
+
+      return {
+        hour,
+        minute,
+        second
+      }
+    }
   },
   watch: {
     currentTime: {
@@ -95,6 +169,7 @@ export default {
     this.$nextTick(this.bindScrollEvent)
   },
   methods: {
+    // 选中input里的值
     handleMouseOver(type) {
       if (type === 'hour') {
         this.setSelect(0, 2)
@@ -120,10 +195,21 @@ export default {
     // 滚动的时候将最近的一个时间设为当前时间
     handleScroll(type, e) {
       const value = Math.floor(e.target.scrollTop / this.ItemHeight)
-      this.$emit('input', dayjs(this.value).set(type, value).toDate())
+      if (this.checkAble(type, value)) {
+        this.$emit('input', dayjs(this.value).set(type, value).toDate())
+      } else {
+        // 不被选中，也要滚动到合适的位置
+        this.adjustScroll({ ...this.currentTime, [type]: value })
+      }
+    },
+    // 检查改值是否在取值范围内
+    checkAble(type, value) {
+      return this.timeList[type][value]
     },
     handleInputFocus() {
-      this.oldValue = this.value
+      if (this.value) {
+        this.oldValue = this.value
+      }
       if (!this.value) {
         this.$emit('input', new Date())
       }
@@ -131,29 +217,52 @@ export default {
       this.$nextTick(() => this.adjustScroll(this.currentTime))
     },
     handleTimeClick(type, event) {
-      this.$emit('input', dayjs(this.value).set(type, +event.target.innerHTML).toDate())
+      const value = +event.target.innerHTML
+      if (this.checkAble(type, value)) {
+        this.$emit('input', dayjs(this.value).set(type, value).toDate())
+      } else {
+        // 不在范围内的值也要调整滚动位置
+        this.adjustScroll({ ...this.currentTime, [type]: value })
+      }
     },
     cancel() {
       if (this.tempValue) {
         this.$emit('input', this.value)
         this.tempValue = null
       } else {
-        this.$emit('input', this.oldValue)
+        // 取消时检查值是否合法
+        this.$emit('input', this.oldValue && this.checkTime(this.oldValue) ? this.oldValue : null)
       }
       this.hidePopperFn()
     },
     confirm() {
+      let confirmValue = this.value
       if (this.tempValue) {
+        // 手动输入的值合法就将值赋值
         const result = this.checkValue(this.tempValue)
-        if (!result) {
-          this.$emit('input', this.value)
-        } else {
+        if (result) {
           const [hour, minute, second] = result
-          this.$emit('input', dayjs(this.value.setHours(hour, minute, second)).toDate())
+          confirmValue = dayjs(this.value.setHours(hour, minute, second)).toDate()
         }
         this.tempValue = null
       }
+      // 值不在范围则用 old 值，如果old也不在范围则设为null， 一般在初始化的时候就不在范围或者点清空后当前时间不在范围才有这种情况
+      if (!this.checkTime(confirmValue)) {
+        if (this.oldValue && this.checkTime(this.oldValue)) {
+          confirmValue = this.oldValue
+        } else {
+          confirmValue = null
+        }
+      }
+      this.$emit('input', confirmValue)
       this.hidePopperFn()
+    },
+    // 检查时间是否在时间段内
+    checkTime(date) {
+      const hour = date.getHours()
+      const minute = date.getMinutes()
+      const second = date.getSeconds()
+      return this.checkAble('hour', hour) && this.checkAble('minute', minute) && this.checkAble('minute', minute)
     },
     clickOutsideCallback() {
       this.confirm()
@@ -167,7 +276,7 @@ export default {
         }
       })
     },
-    //12:11:11
+    //12:11:11 检查输入的值是否合法
     checkValue(val) {
       if (!/^\d{1,2}:\d{1,2}:\d{1,2}$/.test(val)) return false
       let arr = val.split(':')

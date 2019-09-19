@@ -15,7 +15,7 @@ module.exports = {
     rules: [
       {
         test: /\.(jsx?|babel|es6)$/,
-        include: process.cwd(),
+        include: path.resolve(__dirname,'/src'),
         exclude: /node_modules/,
         loader: 'babel-loader',
       },
