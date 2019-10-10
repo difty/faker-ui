@@ -9,5 +9,6 @@
   "autocomplete": "./packages/autocomplete/index.js",
   "select": "./packages/select/index.js",
   "option": "./packages/option/index.js",
-  "time-picker": "./packages/time-picker/index.js"
+  "time-picker": "./packages/time-picker/index.js",
+  "date-picker": "./packages/date-picker/index.js"
 }
